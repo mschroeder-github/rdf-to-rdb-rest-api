@@ -1,0 +1,8 @@
+SELECT *
+WHERE {
+  #{ ?OfferXYZ ?property ?hasValue }
+  #UNION
+  #{ ?isValueOf ?property ?OfferXYZ }
+    ?offer a <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/Offer> .
+    ?s ?p ?offer .
+}
