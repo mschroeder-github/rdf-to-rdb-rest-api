@@ -1,0 +1,33 @@
+# In the following, we present for each BSBM query its REST API call counterpart.
+# In some cases more then one call has to be made to join data in the client appropriately.
+# We omitted calls that would have been necessary to retrieve further information about referred resources, like mostly their labels.
+# The resource query language (RQL) is often used to mimic SPARQL's basic graph patterns and filter possibilities.
+# We put the responsibility for ordering the results to the client.
+# The interpretation of optional information (expressed in SPARQL with the OPTIONAL keyword) is also up to the developer.
+
+(Query 1) /product?rql=type=in=%ProductType%;productFeatureProductFeature=in=(%ProductFeature1%,%ProductFeature2%);productPropertyNumeric1>%x%
+
+(Query 2) /product/%ProductXYZ%
+
+(Query 3) /product?rql=type=in=(%ProductType%);productFeatureProductFeature=in=(%ProductFeature1%);productFeatureProductFeature=out=(%ProductFeature2%);productPropertyNumeric1>%x%;productPropertyNumeric3<%y%
+
+(Query 4) /product?rql=type=in=(%ProductType%);productFeatureProductFeature=in=(%ProductFeature1%);(productFeatureProductFeature=in=(%ProductFeature2%),productFeatureProductFeature=in=(%ProductFeature3%));productPropertyNumeric1>%x%;productPropertyNumeric2>%y%
+
+(Query 5a) /product/%ProductXYZ%
+(Query 5b) /product?rql=id=out=(%ProductXYZ%)
+
+(Query 6)  /product?rql=label=regex=%word1%
+
+(Query 7a) /product/%ProductXYZ%
+(Query 7b) /offer?rql=product==%ProductXYZ%;validTo>%currentDate%
+(Query 7c) /review?rql=reviewFor==%ProductXYZ%
+
+(Query 8)  /review?rql=reviewFor==%ProductXYZ%;text=lang=en
+
+(Query 9)  /review/%ReviewXYZ%
+
+(Query 10) /offer?rql=product==%ProductXYZ%;deliveryDays<=3;validTo>%currentDate%
+
+(Query 11) /offer/%OfferXYZ%
+
+(Query 12) /offer/%OfferXYZ%
