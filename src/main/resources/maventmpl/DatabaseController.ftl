@@ -44,6 +44,7 @@ public class DatabaseController {
                     list.add((T) new LangString(SqlUtils.getString(rs, 2), SqlUtils.getString(rs, 3)));
                 }
             }
+            ps.close();
             
             return list;
         });

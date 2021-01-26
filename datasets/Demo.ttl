@@ -1,0 +1,47 @@
+@prefix : <http://www.dfki.uni-kl.de/~mschroeder/ld/Demo.ttl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+:malta a :Country ;
+    :hasCapitalCity :valletta .
+
+:valletta a :CapitalCity .
+
+:czechRepublic a :Country ;
+    :hasCapitalCity :prague .
+
+:prague a :CapitalCity .
+
+:The_Kappillan_of_Malta a :Book ;
+    :hasCover <https://example.org/img1.jpg> ;
+    :takesPlaceIn :malta ;
+    :hasPage :The_Kappillan_of_Malta_Page1 ,
+             :The_Kappillan_of_Malta_Page2 .
+
+:Like_Bees_to_Honey a :Book , :Paperback ;
+    :hasCover <https://example.org/img2.jpg> ;
+    :takesPlaceIn :malta ;
+    :hasPage :Like_Bees_to_Honey_Page1 ,
+             :Like_Bees_to_Honey_Page2 .
+
+:In_Love_With_Malta a :Book ;
+    :name "In Love With Malta"@en , 
+          "Verliebt in Malta"@de ;
+    :takesPlaceIn :malta ;
+    :publishedDate "2016-06-24"^^xsd:date ;
+    :hasPage [
+                a :Page ;
+                :mentions :prague , :valletta
+             ] .
+
+:The_Kappillan_of_Malta_Page1 a :Page ;
+    :mentions :valletta .
+:The_Kappillan_of_Malta_Page2 a :Page ;
+    :mentions :valletta .
+
+:Like_Bees_to_Honey_Page1 a :Page ;
+    :mentions :valletta , :prague .
+:Like_Bees_to_Honey_Page2 a :Page ;
+    :mentions :valletta , :prague .
+

@@ -175,7 +175,7 @@ public class ${name} {
         ${javaClass.getName()} record = new ${javaClass.getName()}();
 
         <#list javaClass.getSingleAttributesWithoutId() as attr>
-        record.set${attr.getMethodName()}((${attr.getType()}) jsonObject.opt("${attr.getName()}"));
+        record.set${attr.getMethodName()}(to(jsonObject.opt("${attr.getName()}"), ${attr.getType()}.class));
         </#list>
 
         JSONArray array;
@@ -184,13 +184,24 @@ public class ${name} {
         if(array != null && !array.isEmpty()) {
             ${attr.getType()} list = new ArrayList<>();
             for(int i = 0; i < array.length(); i++) {
-                list.add((${attr.getTypeSingle()}) array.get(i));
+                list.add(to(array.get(i), ${attr.getTypeSingle()}.class));
             }
             record.set${attr.getMethodName()}(list);
         }
         </#list>
 
         return record;
+    }
+
+    private <T> T to(Object obj, Class<T> type) {
+        if(obj == null)
+            return (T) obj;
+
+        if(obj instanceof Integer && type.equals(Long.class)) {
+            Integer i = (Integer) obj;
+            return (T) Long.valueOf(i.longValue());
+}
+        return (T) obj;
     }
 
 }

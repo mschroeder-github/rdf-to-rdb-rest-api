@@ -1,8 +1,5 @@
 package rdf2rdb;
 
-import rdf2rdb.RdfsAnalyzer.Cardinality;
-import rdf2rdb.RdfsAnalyzer.MultiCardinalityProperty;
-import rdf2rdb.RdfsAnalyzer.StorageClass;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,6 +22,9 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.SKOS;
+import rdf2rdb.RdfsAnalyzer.Cardinality;
+import rdf2rdb.RdfsAnalyzer.MultiCardinalityProperty;
+import rdf2rdb.RdfsAnalyzer.StorageClass;
 
 /**
  *
@@ -258,6 +258,10 @@ public class SqliteConverter {
         Map<String, List<Table>> name2duplicates = new HashMap<>();
         
         for(MultiCardinalityProperty mcp : analyzer.getMultiCardProperties()) {
+            
+            if(mcp.getProperty().equals(RDF.type)) {
+                continue;
+            }
             
             boolean isLiteralProp = analyzer.getLiteralProperties().contains(mcp.getProperty());
             
