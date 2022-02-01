@@ -1,5 +1,9 @@
-package rdf2rdb;
+package de.dfki.sds.rdf2rdb;
 
+import de.dfki.sds.rdf2rdb.RdfsAnalyzer.StorageClass;
+import de.dfki.sds.rdf2rdb.SqliteConverter.Column;
+import de.dfki.sds.rdf2rdb.SqliteConverter.SqliteConversion;
+import de.dfki.sds.rdf2rdb.SqliteConverter.Table;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;
@@ -14,10 +18,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.text.CaseUtils;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
-import rdf2rdb.RdfsAnalyzer.StorageClass;
-import rdf2rdb.SqliteConverter.Column;
-import rdf2rdb.SqliteConverter.SqliteConversion;
-import rdf2rdb.SqliteConverter.Table;
 import spark.ModelAndView;
 import spark.template.freemarker.FreeMarkerEngine;
 
@@ -47,7 +47,7 @@ public class MavenExporter {
         freeMarkerEngine = new FreeMarkerEngine(freemarkerConfig);
     }
     
-    public void export(File projectFolder, String artifactId, String groupId, String version, String name, String desc, String classpath, String jarParams, String pomExtra) throws IOException {
+    public void export(File projectFolder, MavenExportConfig config) throws IOException {
         projectFolder.mkdirs();
         
         //pom.xml (aggregator)
@@ -61,17 +61,17 @@ public class MavenExporter {
         //module2 (folder)
         
         Map<String, Object> aggModel = new HashMap<>();
-        aggModel.put("artifactId", artifactId);
-        aggModel.put("groupId", groupId);
-        aggModel.put("version", version);
-        if(name != null) {
-            aggModel.put("name", name);
+        aggModel.put("artifactId", config.getArtifactId());
+        aggModel.put("groupId", config.getGroupId());
+        aggModel.put("version", config.getVersion());
+        if(config.getName() != null) {
+            aggModel.put("name", config.getName());
         }
-        if(desc != null) {
-            aggModel.put("desc", desc);
+        if(config.getDesc() != null) {
+            aggModel.put("desc", config.getDesc());
         }
-        if(pomExtra != null) {
-            aggModel.put("pomExtra", pomExtra);
+        if(config.getPomExtra() != null) {
+            aggModel.put("pomExtra", config.getPomExtra());
         }
         String pomAggContent = freeMarkerEngine.render(new ModelAndView(aggModel, "pom-agg.ftl"));
         File pomAggFile = new File(projectFolder, "pom.xml");
@@ -85,10 +85,10 @@ public class MavenExporter {
         apiFolder.mkdirs();
         
         Map<String, Object> pomModel = new HashMap<>();
-        pomModel.put("parent_artifactId", artifactId);
-        pomModel.put("parent_groupId", groupId);
-        pomModel.put("parent_version", version);
-        pomModel.put("artifactId", artifactId + "." + apiName);
+        pomModel.put("parent_artifactId", config.getArtifactId());
+        pomModel.put("parent_groupId", config.getGroupId());
+        pomModel.put("parent_version", config.getVersion());
+        pomModel.put("artifactId", config.getArtifactId() + "." + apiName);
         String pomContent = freeMarkerEngine.render(new ModelAndView(pomModel, "pom-api.ftl"));
         File pomFile = new File(apiFolder, "pom.xml");
         FileUtils.writeStringToFile(pomFile, pomContent, StandardCharsets.UTF_8);
@@ -98,7 +98,7 @@ public class MavenExporter {
         javaFolder.mkdirs();
         
         //folder where classes are stored
-        String apiClasspath = classpath.replace("-", "_") + "." + apiName;
+        String apiClasspath = config.getClasspath().replace("-", "_") + "." + apiName;
         
         File codeFolder = javaFolder;
         String[] segments = apiClasspath.split("\\.");
@@ -121,16 +121,16 @@ public class MavenExporter {
         serverFolder.mkdirs();
         
         //folder where classes are stored
-        String serverClasspath = classpath.replace("-", "_") + "." + serverName;
+        String serverClasspath = config.getClasspath().replace("-", "_") + "." + serverName;
         
-        String serverArtifactId = artifactId + "." + serverName;
+        String serverArtifactId = config.getArtifactId() + "." + serverName;
         
-        String serverScriptName = artifactId + "-" + serverName;
+        String serverScriptName = config.getArtifactId() + "-" + serverName;
         
         pomModel.put("artifactId", serverArtifactId);
-        pomModel.put("api_artifactId", artifactId + "." + apiName);
-        pomModel.put("api_groupId", groupId);
-        pomModel.put("api_version", version);
+        pomModel.put("api_artifactId", config.getArtifactId() + "." + apiName);
+        pomModel.put("api_groupId", config.getGroupId());
+        pomModel.put("api_version", config.getVersion());
         pomModel.put("jarName", serverScriptName + ".jar");
         pomModel.put("classpath", serverClasspath);
         String serverPomContent = freeMarkerEngine.render(new ModelAndView(pomModel, "pom-server.ftl"));
@@ -153,7 +153,7 @@ public class MavenExporter {
         Map<String, Object> scriptModel = new HashMap<>();
         scriptModel.put("serviceName", serverScriptName);
         scriptModel.put("jarName", serverScriptName + ".jar");
-        scriptModel.put("jarParams", jarParams);
+        scriptModel.put("jarParams", config.getJarParams());
         scriptModel.put("name", serverScriptName);
         String scriptContent = freeMarkerEngine.render(new ModelAndView(scriptModel, "runscript.ftl"));
         File scriptFile = new File(serverFolder, serverScriptName + ".sh");

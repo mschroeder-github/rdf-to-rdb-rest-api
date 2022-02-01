@@ -1,5 +1,9 @@
-package rdf2rdb;
+package de.dfki.sds.rdf2rdb;
 
+import de.dfki.sds.rdf2rdb.RdfsAnalyzer.Cardinality;
+import de.dfki.sds.rdf2rdb.RdfsAnalyzer.MultiCardinalityProperty;
+import de.dfki.sds.rdf2rdb.RdfsAnalyzer.StorageClass;
+import de.dfki.sds.rdf2rdb.util.StringUtility;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -22,9 +26,6 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.apache.jena.vocabulary.SKOS;
-import rdf2rdb.RdfsAnalyzer.Cardinality;
-import rdf2rdb.RdfsAnalyzer.MultiCardinalityProperty;
-import rdf2rdb.RdfsAnalyzer.StorageClass;
 
 /**
  *
@@ -798,9 +799,12 @@ public class SqliteConverter {
                     //use the hex value (base64?)
                     insert.data[index] = lit.getLexicalForm();
                 } else if (sc == StorageClass.INTEGER) {
-                    //can be time and also boolean
                     if (lit.getValue() instanceof Long || lit.getValue() instanceof Short || lit.getValue() instanceof Integer) {
                         insert.data[index] = lit.getValue();
+                    } else if(lit.getValue() instanceof Boolean) { 
+                    
+                        insert.data[index] = ((boolean) lit.getValue()) ? 1 : 0;
+                        
                     } else {
                         warnings.add(new Warning("integer value problem", stmt));
                     }

@@ -200,7 +200,7 @@ public class ${name} {
         if(obj instanceof Integer && type.equals(Long.class)) {
             Integer i = (Integer) obj;
             return (T) Long.valueOf(i.longValue());
-}
+        }
         return (T) obj;
     }
 

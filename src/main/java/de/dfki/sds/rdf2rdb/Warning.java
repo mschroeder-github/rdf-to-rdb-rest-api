@@ -1,11 +1,10 @@
-package rdf2rdb;
+package de.dfki.sds.rdf2rdb;
 
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Statement;
 
 /**
  *
-
  */
 public class Warning {
 

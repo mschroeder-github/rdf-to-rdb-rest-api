@@ -1,5 +1,6 @@
-package rdf2rdb;
+package de.dfki.sds.rdf2rdb.eval;
 
+import de.dfki.sds.rdf2rdb.util.REST;
 import anonymous.group.api.DatabaseController;
 import anonymous.group.server.Server;
 import java.io.File;

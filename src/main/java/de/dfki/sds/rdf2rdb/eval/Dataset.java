@@ -1,4 +1,4 @@
-package rdf2rdb;
+package de.dfki.sds.rdf2rdb.eval;
 
 import java.io.File;
 

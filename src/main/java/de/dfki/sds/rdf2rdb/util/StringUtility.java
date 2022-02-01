@@ -1,4 +1,4 @@
-package rdf2rdb;
+package de.dfki.sds.rdf2rdb.util;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;

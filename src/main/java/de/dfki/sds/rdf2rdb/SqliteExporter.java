@@ -1,5 +1,7 @@
-package rdf2rdb;
+package de.dfki.sds.rdf2rdb;
 
+import de.dfki.sds.rdf2rdb.SqliteConverter.SqliteConversion;
+import de.dfki.sds.rdf2rdb.SqliteConverter.Table;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;
@@ -10,8 +12,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
-import rdf2rdb.SqliteConverter.SqliteConversion;
-import rdf2rdb.SqliteConverter.Table;
 import spark.ModelAndView;
 import spark.template.freemarker.FreeMarkerEngine;
 
@@ -56,6 +56,7 @@ public class SqliteExporter {
                 
                 
                 String createTable = freeMarkerEngine.render(new ModelAndView(model, "createTable.ftl"));
+                System.out.println(createTable);
                 try {
                     stmt.execute(createTable);
                 } catch(SQLException e) {
@@ -72,6 +73,7 @@ public class SqliteExporter {
                     String insertInto = "";
                     try {
                         insertInto = freeMarkerEngine.render(new ModelAndView(model, "insertInto.ftl"));
+                        System.out.println(insertInto);
                         stmt.execute(insertInto);
                     } catch(Exception e) {
                         throw new SQLException(insertInto, e);

@@ -1,5 +1,6 @@
-package rdf2rdb;
+package de.dfki.sds.rdf2rdb;
 
+import de.dfki.sds.rdf2rdb.util.StringUtility;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -120,6 +121,22 @@ public class RdfsAnalyzer {
         public String toString() {
             return "MultiCardinalityProperty{" + "domain=" + domain + ", property=" + property + ", range=" + range + '}';
         }
+        
+        public String getName() {
+            StringBuilder sb = new StringBuilder();
+            
+            if(hasDomain()) {
+                sb.append(StringUtility.getLocalName(getDomain().getURI())).append(" ");
+            }
+            
+            sb.append(StringUtility.getLocalName(getProperty().getURI()));
+            
+            if(hasRange()) {
+                sb.append(" ").append(StringUtility.getLocalName(getRange().getURI()));
+            }
+            
+            return sb.toString();
+        }
 
     }
 
@@ -234,7 +251,7 @@ public class RdfsAnalyzer {
         langStringProperties = new HashSet<>();
     }
 
-    public void analyze(Model model) {
+    public RdfsAnalyzer analyze(Model model) {
         this.model = model;
 
         skolemize();
@@ -293,9 +310,9 @@ public class RdfsAnalyzer {
             }
             return !add;
         });
-
+        
         types.addAll(explicitClasses);
-
+        
         //explicit domains and ranges
         for (Property prop : explicitProperties) {
             for (Statement domainStmt : toIterable(model.listStatements(prop, RDFS.domain, (RDFNode) null))) {
@@ -460,6 +477,8 @@ public class RdfsAnalyzer {
 
         //untypedAnalysis();
         //multiTypeCleanup();
+        
+        return this;
     }
 
     private Iterable<Statement> toIterable(StmtIterator iter) {
@@ -573,17 +592,17 @@ public class RdfsAnalyzer {
     //use this to define the cardinality by hand
     public void addProperty(Property property, Cardinality domainCard, Cardinality rangeCard) {
         explicitProperties.add(property);
-
+        
         domainCardinality.put(property, domainCard);
         rangeCardinality.put(property, rangeCard);
-
+        
         multiCardinalityProperty(property);
     }
-
+    
     public void addPropertyDomain(Property property, Resource domain) {
         propertyDomains.computeIfAbsent(property, p -> new HashSet<>()).add(domain);
     }
-
+    
     public void addPropertyRange(Property property, Resource range) {
         propertyRanges.computeIfAbsent(property, p -> new HashSet<>()).add(range);
     }
@@ -617,6 +636,10 @@ public class RdfsAnalyzer {
             return;
         }
 
+        if (prop.equals(RDFS.label)) {
+            return;
+        }
+        
         boolean isLiteralProperty = literalProperties.contains(prop);
         boolean isLangStringProperty = langStringProperties.contains(prop);
 
@@ -624,8 +647,20 @@ public class RdfsAnalyzer {
         if (isLangStringProperty
                 || (domainCardinality.get(prop) == Cardinality.MULTI && rangeCardinality.get(prop) == Cardinality.MULTI)) {
 
+            if (prop == null) {
+                int a = 0;
+            }
+
+            if (propertyDomains == null) {
+                int a = 0;
+            }
+
             Set<Resource> domains = propertyDomains.get(prop);
             Set<Resource> ranges = propertyRanges.get(prop);
+
+            if (domains == null) {
+                int a = 0;
+            }
 
             //remove the domain or range if the referred type does not have any instances
             domains.removeIf(type -> !model.contains(null, RDF.type, type));
@@ -683,7 +718,6 @@ public class RdfsAnalyzer {
             }
         }
     }
-    //multiCardProperties.forEach(mcp -> System.out.println(mcp));
 
     private void cardinalityAnalysis() {
         Map<Property, Map<Resource, Set<RDFNode>>> p2s2os = new HashMap<>();
@@ -914,7 +948,7 @@ public class RdfsAnalyzer {
     public Map<Resource, Set<Resource>> getType2instances() {
         return type2instances;
     }
-
+    
     public Map<Property, Cardinality> getDomainCardinality() {
         return domainCardinality;
     }
@@ -999,7 +1033,9 @@ public class RdfsAnalyzer {
     public Set<Property> getLangStringProperties() {
         return langStringProperties;
     }
-
+    
+    
+    
     public Model getModel() {
         return model;
     }

@@ -77,7 +77,7 @@ public class Client {
         </#list>
 
         <#list javaClass.getListAttributes() as attr>
-        if(record.has${attr.getMethodName()}() && !record.get${attr.getMethodName()}().isEmpty()) {
+        if(record.has${attr.getMethodName()}()) {
             result.put("${attr.getName()}", new JSONArray(record.get${attr.getMethodName()}())); <#-- TODO LangString -->
         }
         </#list>

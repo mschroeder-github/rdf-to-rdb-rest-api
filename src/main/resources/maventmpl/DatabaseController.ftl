@@ -241,7 +241,7 @@ public class DatabaseController {
             return records;
 
         SqlUtils.run(connection, c -> {
-            String query = "INSERT INTO ${javaClass.getTable().getName()} VALUES (<#list javaClass.getSingleAttributes() as attr>?<#if !(attr?is_last)>,</#if></#list>)";
+            String query = "INSERT INTO ${javaClass.getTable().getName()} (<#list javaClass.getSingleAttributes() as attr>\"${attr.getColumn().getName()}\"<#if !(attr?is_last)>,</#if></#list>) VALUES (<#list javaClass.getSingleAttributes() as attr>?<#if !(attr?is_last)>,</#if></#list>)";
 
             c.setAutoCommit(false);
             PreparedStatement ps = c.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
@@ -314,7 +314,7 @@ public class DatabaseController {
                 StringJoiner paramSJ = new StringJoiner(", ");
                 <#list javaClass.getSingleAttributesWithoutId() as attr>
                 if(put || record.has${attr.getMethodName()}()) {
-                    paramSJ.add("${attr.getColumn().getName()} = ?");
+                    paramSJ.add("\"${attr.getColumn().getName()}\" = ?");
                 }
                 </#list>
                 if(paramSJ.length() == 0) {

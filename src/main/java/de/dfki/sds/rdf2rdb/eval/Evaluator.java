@@ -1,5 +1,13 @@
-package rdf2rdb;
+package de.dfki.sds.rdf2rdb.eval;
 
+import de.dfki.sds.rdf2rdb.MavenExportConfig;
+import de.dfki.sds.rdf2rdb.MavenExporter;
+import de.dfki.sds.rdf2rdb.RdfsAnalyzer;
+import de.dfki.sds.rdf2rdb.RdfsAnalyzer.Cardinality;
+import de.dfki.sds.rdf2rdb.SqliteConverter;
+import de.dfki.sds.rdf2rdb.SqliteConverter.SqliteConversion;
+import de.dfki.sds.rdf2rdb.SqliteConverter.Table;
+import de.dfki.sds.rdf2rdb.SqliteExporter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -16,9 +24,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.tdb2.TDB2Factory;
-import rdf2rdb.RdfsAnalyzer.Cardinality;
-import rdf2rdb.SqliteConverter.SqliteConversion;
-import rdf2rdb.SqliteConverter.Table;
+
 
 /**
  *
@@ -268,7 +274,16 @@ public class Evaluator {
 
             System.out.println("export maven " + Arrays.asList(basename, "anonymous.group", "1.0.0-SNAPSHOT", "anonymous.group." + basename));
             MavenExporter exporter = new MavenExporter(conversion);
-            exporter.export(new File(genFolder, basename), basename, "anonymous.group", "1.0.0-SNAPSHOT", null, null, "anonymous.group." + basename, "", "");
+            
+            MavenExportConfig config = new MavenExportConfig();
+            config.setArtifactId(basename);
+            config.setGroupId("anonymous.group");
+            config.setVersion("1.0.0-SNAPSHOT");
+            config.setClasspath("anonymous.group." + basename);
+            config.setName("");
+            config.setDesc("");
+            
+            exporter.export(new File(genFolder, basename), config);
             
             
             System.out.println();
